@@ -1,12 +1,11 @@
-web:
-  build: .
-  command: /run.sh
-  links:
-   - statsd
-   - grafana
-  ports:
-   - "80:80"
-
+#web:
+#  build: .
+#  command: /run.sh
+#  links:
+#   - statsd
+#   - grafana
+#  ports:
+#   - "80:80"
 
 statsd:
   image: shakr/statsd-influxdb
@@ -18,17 +17,26 @@ statsd:
     - influxdb
 
 influxdb:
-  image: tutum/influxdb:0.8.8
+  image: tutum/influxdb:0.9
+  expose:
+    - "8090"
+    - "8099"
   ports:
     - "8083:8083"
     - "8086:8086"
     - "8090:8090"
+  volumes:
+    - /data/influxdb:/data  
   env_file:
     - 'env.influxdb'
 
 grafana:
-  image: grafana/grafana:2.0.2
+  image: grafana/grafana:4.0.2
   ports:
     - "3000:3000"
+  volumes:
+    - /data/grafana:/var/lib/grafana
   links:
+    - statsd  
     - influxdb
+

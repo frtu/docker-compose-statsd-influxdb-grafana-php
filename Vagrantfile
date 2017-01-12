@@ -1,6 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# https://github.com/leighmcculloch/vagrant-docker-compose
+unless Vagrant.has_plugin?("vagrant-docker-compose")
+  system("vagrant plugin install vagrant-docker-compose")
+  puts "Dependencies installed, please try the command again."
+  exit
+end
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -12,7 +19,9 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "https://github.com/jose-lpa/packer-ubuntu_14.04/releases/download/v2.0/ubuntu-14.04.box"
+  # config.vm.box = "https://github.com/jose-lpa/packer-ubuntu_14.04/releases/download/v2.0/ubuntu-14.04.box"
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "docker-influxdb-grafana"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -72,4 +81,7 @@ Vagrant.configure(2) do |config|
   #   sudo apt-get update
   #   sudo apt-get install -y apache2
   # SHELL
+
+  config.vm.provision :docker
+  config.vm.provision :docker_compose, yml: "/home/vagrant/data/docker-compose.yml", rebuild: true, run: "always"  
 end
